@@ -22,6 +22,12 @@ on:
         required: true
         default: false
 
+      enable_ys:
+        description: "Integrate YouSpeed"
+        type: boolean
+        required: true
+        default: false
+
       enable_ryd:
         description: "Integrate Return YouTube Dislikes"
         type: boolean
@@ -125,7 +131,7 @@ jobs:
           submodules: recursive
 
       - name: Download iOS SDK
-        if: ${{ (inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ryd || inputs.enable_demc) && steps.theos.outputs.cache-hit != 'true' }}
+        if: ${{ (inputs.enable_youpip || inputs.enable_ytuhd || inputs.enable_yq || inputs.enable_ys || inputs.enable_ryd || inputs.enable_demc) && steps.theos.outputs.cache-hit != 'true' }}
         run: |
           git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/theos/sdks/
           cd sdks
@@ -218,8 +224,14 @@ jobs:
           cd ${{ github.workspace }}
           git clone --quiet --depth=1 https://github.com/PoomSmart/YouQuality.git
 
+      - name: Clone YouSpeed
+        if: ${{ inputs.enable_ys }}
+        run: |
+          cd ${{ github.workspace }}
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouSpeed.git
+
       - name: Clone YTVideoOverlay
-        if: ${{ inputs.enable_yq || inputs.enable_youpip }}
+        if: ${{ inputs.enable_yq || inputs.enable_youpip || inputs.enable_ys }}
         run: |
           cd ${{ github.workspace }}
           git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoOverlay.git
@@ -275,8 +287,17 @@ jobs:
         env:
           THEOS: ${{ github.workspace }}/theos
 
+        - name: Build YouSpeed
+        if: ${{ inputs.enable_ys }}
+        run: |
+          cd ${{ github.workspace }}/YouSpeed
+          make clean package DEBUG=0 FINALPACKAGE=1
+          mv packages/*.deb ${{ github.workspace }}/ys.deb
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
       - name: Build YTVideoOverlay
-        if: ${{ inputs.enable_yq || inputs.enable_youpip }}
+        if: ${{ inputs.enable_yq || inputs.enable_youpip || inputs.enable_ys }}
         run: |
           cd ${{ github.workspace }}/YTVideoOverlay
           make clean package DEBUG=0 FINALPACKAGE=1

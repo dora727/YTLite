@@ -28,8 +28,8 @@ on:
         required: true
         default: false
 
-      enable_yl:
-        description: "Integrate YouLoop"
+      enable_ygc:
+        description: "Integrate YouGetCaption"
         type: boolean
         required: true
         default: false
@@ -236,11 +236,11 @@ jobs:
           cd ${{ github.workspace }}
           git clone --quiet --depth=1 https://github.com/PoomSmart/YouSpeed.git
 
-      - name: Clone YouLoop
-        if: ${{ inputs.enable_ys }}
+      - name: Clone YouGetCaption
+        if: ${{ inputs.enable_ygc }}
         run: |
           cd ${{ github.workspace }}
-          git clone --quiet --depth=1 https://github.com/bhackel/YouLoop.git
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouGetCaption.git
 
       - name: Clone YTVideoOverlay
         if: ${{ inputs.enable_yq || inputs.enable_youpip }}
@@ -308,17 +308,17 @@ jobs:
         env:
           THEOS: ${{ github.workspace }}/theos
 
-      - name: Build YouLoop
-        if: ${{ inputs.enable_ys }}
+      - name: Build YouGetCaption
+        if: ${{ inputs.enable_ygc }}
         run: |
-          cd ${{ github.workspace }}/YouLoop
+          cd ${{ github.workspace }}/YouGetCaption
           make clean package DEBUG=0 FINALPACKAGE=1
-          mv packages/*.deb ${{ github.workspace }}/yl.deb
+          mv packages/*.deb ${{ github.workspace }}/ygc.deb
         env:
           THEOS: ${{ github.workspace }}/theos
 
       - name: Build YTVideoOverlay
-        if: ${{ inputs.enable_yq || inputs.enable_youpip }}
+        if: ${{ inputs.enable_yq || inputs.enable_youpip || inputs.enable_ys }}
         run: |
           cd ${{ github.workspace }}/YTVideoOverlay
           make clean package DEBUG=0 FINALPACKAGE=1

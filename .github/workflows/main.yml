@@ -21,6 +21,18 @@ on:
         type: boolean
         required: true
         default: false
+      
+      enable_ys:
+        description: "Integrate YouSpeed"
+        type: boolean
+        required: true
+        default: false
+
+      enable_yl:
+        description: "Integrate YouLoop"
+        type: boolean
+        required: true
+        default: false
 
       enable_ryd:
         description: "Integrate Return YouTube Dislikes"
@@ -217,6 +229,18 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           git clone --quiet --depth=1 https://github.com/PoomSmart/YouQuality.git
+      
+      - name: Clone YouSpeed
+        if: ${{ inputs.enable_ys }}
+        run: |
+          cd ${{ github.workspace }}
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouSpeed.git
+
+      - name: Clone YouLoop
+        if: ${{ inputs.enable_ys }}
+        run: |
+          cd ${{ github.workspace }}
+          git clone --quiet --depth=1 https://github.com/bhackel/YouLoop.git
 
       - name: Clone YTVideoOverlay
         if: ${{ inputs.enable_yq || inputs.enable_youpip }}
@@ -272,6 +296,24 @@ jobs:
           cd ${{ github.workspace }}/YouQuality
           make clean package DEBUG=0 FINALPACKAGE=1
           mv packages/*.deb ${{ github.workspace }}/yq.deb
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Build YouSpeed
+        if: ${{ inputs.enable_ys }}
+        run: |
+          cd ${{ github.workspace }}/YouSpeed
+          make clean package DEBUG=0 FINALPACKAGE=1
+          mv packages/*.deb ${{ github.workspace }}/ys.deb
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Build YouLoop
+        if: ${{ inputs.enable_ys }}
+        run: |
+          cd ${{ github.workspace }}/YouLoop
+          make clean package DEBUG=0 FINALPACKAGE=1
+          mv packages/*.deb ${{ github.workspace }}/yl.deb
         env:
           THEOS: ${{ github.workspace }}/theos
 
